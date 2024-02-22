@@ -72,7 +72,7 @@ class _WeatherMainScreenState extends State<WeatherMainScreen> {
                 ),
                 const Spacer(flex: 1),
                 Padding(
-                  padding: const EdgeInsets.only(left: 30.0),
+                  padding: const EdgeInsets.only(left: 29.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
