@@ -1,8 +1,8 @@
 class Weather {
-  final int epouchDate;
+  final String epouchDate;
   final String country;
   final String weatherMain;
-  final double temp;
+  final String temp;
 
   Weather(
       {required this.epouchDate,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:weather_app_test/data/repository_impl.dart';
 import 'package:weather_app_test/domain/entities.dart';
 
@@ -10,86 +11,135 @@ class WeatherMainScreen extends StatefulWidget {
 }
 
 class _WeatherMainScreenState extends State<WeatherMainScreen> {
-  Future<Weather>? weather;
-  @override
-  void initState() {
-    weather = GetWeatherImpl().getTodayWeather();
-    super.initState();
-  }
+  Future<Weather> weather = GetWeatherImpl().getTodayWeather();
 
   @override
   Widget build(BuildContext context) {
+    MediaQueryData queryData = MediaQuery.of(context);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFCDECFC),
-      ),
       backgroundColor: const Color(0xFFCDECFC),
-      body: FutureBuilder(
-          future: weather,
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            return Column(
+      body: FutureBuilder<Weather>(
+        future: weather,
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          } else {
+            Weather weatherData = snapshot.data;
+            return Stack(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [Image.asset('assets/images/big_cloud.png')],
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Padding(
+                  padding: const EdgeInsets.only(top: 25.0),
+                  child: Column(
                     children: [
-                      Column(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("July 25, 2024"),
-                          Text("Bangalore, India"),
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(top: 20.0, left: 80.0),
+                            child: Image.asset(
+                              'assets/images/big_cloud.png',
+                              height: queryData.size.height * 0.07,
+                              fit: BoxFit.cover,
+                            ),
+                          )
                         ],
                       ),
-                      Text("24 C")
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20.0, top: 5.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [Image.asset('assets/images/small_cloud.png')],
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [Image.asset('assets/images/Sun.png')],
-                ),
-                const Spacer(flex: 1),
-                const Column(
-                  children: [
-                    Text("THURSDAY"),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text("SUNNY"),
-                    ),
-                  ],
-                ),
-                const Spacer(flex: 1),
-                Padding(
-                  padding: const EdgeInsets.only(left: 29.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Image.asset(
-                        'assets/images/girl_walk.png',
-                        alignment: Alignment.bottomLeft,
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20.0, right: 10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  weatherData.epouchDate,
+                                  style: GoogleFonts.josefinSans().copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: queryData.size.width * 0.06),
+                                ),
+                                Text(
+                                  weatherData.country,
+                                  style: GoogleFonts.josefinSans().copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: queryData.size.width * 0.05),
+                                ),
+                                Image.asset(
+                                  'assets/images/small_cloud.png',
+                                  height: queryData.size.height * 0.05,
+                                  fit: BoxFit.cover,
+                                )
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Text(weatherData.temp,
+                                    style: GoogleFonts.josefinSans().copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: queryData.size.width * 0.12)),
+                                Image.asset(
+                                  'assets/images/Sun.png',
+                                  height: queryData.size.height * 0.13,
+                                  fit: BoxFit.cover,
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-                Image.asset(
-                  'assets/images/Meadows.png',
-                  alignment: Alignment.topLeft,
-                )
+                Positioned(
+                  top: queryData.size.height / 2.3,
+                  left: 0,
+                  right: 0,
+                  child: Column(
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text("THURSDAY",
+                            style: GoogleFonts.josefinSans().copyWith(
+                                fontWeight: FontWeight.w900,
+                                fontSize: queryData.size.width * 0.08)),
+                      ),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          weatherData.weatherMain,
+                          style: GoogleFonts.josefinSans().copyWith(
+                              fontWeight: FontWeight.w500,
+                              fontSize: queryData.size.width * 0.06),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  child: Image.asset(
+                    'assets/images/Meadows.png',
+                    width: queryData.size.width,
+                    height: queryData.size.height * 0.27,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                Positioned(
+                  bottom: queryData.size.height * 0.26,
+                  left: queryData.size.width * 0.15,
+                  child: Image.asset(
+                    'assets/images/girl_walk.png',
+                    height: queryData.size.height * 0.2,
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ],
             );
-          }),
+          }
+        },
+      ),
     );
   }
 }
